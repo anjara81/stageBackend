@@ -1,0 +1,17 @@
+{
+  "name": "tableau-bord-drsp-backend",
+  "version": "1.0.0",
+  "description": "API du tableau de bord statistique DRSP",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
