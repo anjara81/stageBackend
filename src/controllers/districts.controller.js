@@ -9,8 +9,9 @@ async function getAll(req, res) {
 }
 
 async function getOne(req, res) {
-  const { id } = req.params;
-  const district = await prisma.district.findUnique({ where: { id: Number(id) } });
+  const district = await prisma.district.findUnique({
+    where: { id: Number(req.params.id) },
+  });
   if (!district) return res.status(404).json({ error: "District introuvable" });
   res.json(district);
 }
@@ -23,15 +24,19 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-  const { id } = req.params;
   const { nom } = req.body;
-  const district = await prisma.district.update({ where: { id: Number(id) }, data: { nom } });
+  const district = await prisma.district.update({
+    where: { id: Number(req.params.id) },
+    data: { nom },
+  });
   res.json(district);
 }
 
 async function remove(req, res) {
-  const { id } = req.params;
-  await prisma.district.update({ where: { id: Number(id) }, data: { actif: false } });
+  await prisma.district.update({
+    where: { id: Number(req.params.id) },
+    data: { actif: false },
+  });
   res.status(204).send();
 }
 

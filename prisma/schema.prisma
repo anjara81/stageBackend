@@ -1,13 +1,128 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleUtilisateur {
+  ADMIN
+  AGENT_SAISIE
+}
+
+enum TypeIndicateur {
+  SAISI
+  CALCULE
+}
+
+model District {
+  id        Int      @id @default(autoincrement())
+  nom       String   @unique
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  valeurs ValeurMensuelle[]
+
+  @@map("districts")
+}
+
+model Programme {
+  id        Int      @id @default(autoincrement())
+  nom       String   @unique
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  indicateurs Indicateur[]
+
+  @@map("programmes")
+}
+
+model Indicateur {
+  id             Int            @id @default(autoincrement())
+  nom            String
+  type           TypeIndicateur @default(SAISI)
+  unite          String?
+  actif          Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+
+  programmeId    Int
+  programme      Programme @relation(fields: [programmeId], references: [id])
+
+  numerateurId   Int?
+  numerateur     Indicateur? @relation("FormuleNumerateur", fields: [numerateurId], references: [id])
+  denominateurId Int?
+  denominateur   Indicateur? @relation("FormuleDenominateur", fields: [denominateurId], references: [id])
+
+  utiliseCommeNumerateurPar   Indicateur[] @relation("FormuleNumerateur")
+  utiliseCommeDenominateurPar Indicateur[] @relation("FormuleDenominateur")
+
+  valeurs ValeurMensuelle[]
+
+  @@map("indicateurs")
+}
+
+model ValeurMensuelle {
+  id        Int      @id @default(autoincrement())
+  annee     Int
+  mois      Int
+  valeur    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  indicateurId Int
+  indicateur   Indicateur @relation(fields: [indicateurId], references: [id])
+
+  districtId Int
+  district   District @relation(fields: [districtId], references: [id])
+
+  historiques HistoriqueSaisie[]
+
+  @@unique([indicateurId, districtId, annee, mois])
+  @@map("valeurs_mensuelles")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  nom         String   @unique
+  description String?
+  responsable String?
+  createdAt   DateTime @default(now())
+
+  utilisateurs Utilisateur[]
+
+  @@map("services")
+}
+
+model Utilisateur {
+  id         Int             @id @default(autoincrement())
+  nom        String
+  email      String          @unique
+  motDePasse String
+  role       RoleUtilisateur @default(AGENT_SAISIE)
+  actif      Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+
+  serviceId Int?
+  service   Service? @relation(fields: [serviceId], references: [id])
+
+  historiques HistoriqueSaisie[]
+
+  @@map("utilisateurs")
+}
+
+model HistoriqueSaisie {
+  id               Int      @id @default(autoincrement())
+  ancienneValeur   Float?
+  nouvelleValeur   Float
+  dateModification DateTime @default(now())
+
+  valeurMensuelleId Int
+  valeurMensuelle   ValeurMensuelle @relation(fields: [valeurMensuelleId], references: [id])
+
+  utilisateurId Int
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+
+  @@map("historiques_saisie")
 }

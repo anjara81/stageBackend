@@ -14,9 +14,8 @@ async function getAll(req, res) {
 }
 
 async function getOne(req, res) {
-  const { id } = req.params;
   const indicateur = await prisma.indicateur.findUnique({
-    where: { id: Number(id) },
+    where: { id: Number(req.params.id) },
     include: { numerateur: true, denominateur: true },
   });
   if (!indicateur) return res.status(404).json({ error: "Indicateur introuvable" });
@@ -25,15 +24,10 @@ async function getOne(req, res) {
 
 async function create(req, res) {
   const { nom, type, unite, programmeId, numerateurId, denominateurId } = req.body;
-
-  if (!nom || !programmeId) {
+  if (!nom || !programmeId)
     return res.status(400).json({ error: "nom et programmeId sont obligatoires" });
-  }
-  if (type === "CALCULE" && (!numerateurId || !denominateurId)) {
-    return res.status(400).json({
-      error: "Un indicateur calculé doit avoir un numerateurId et un denominateurId",
-    });
-  }
+  if (type === "CALCULE" && (!numerateurId || !denominateurId))
+    return res.status(400).json({ error: "Un indicateur calculé doit avoir numerateurId et denominateurId" });
 
   const indicateur = await prisma.indicateur.create({
     data: {
@@ -49,18 +43,19 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-  const { id } = req.params;
   const { nom, unite } = req.body;
   const indicateur = await prisma.indicateur.update({
-    where: { id: Number(id) },
+    where: { id: Number(req.params.id) },
     data: { nom, unite },
   });
   res.json(indicateur);
 }
 
 async function remove(req, res) {
-  const { id } = req.params;
-  await prisma.indicateur.update({ where: { id: Number(id) }, data: { actif: false } });
+  await prisma.indicateur.update({
+    where: { id: Number(req.params.id) },
+    data: { actif: false },
+  });
   res.status(204).send();
 }
 

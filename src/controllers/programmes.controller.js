@@ -10,9 +10,8 @@ async function getAll(req, res) {
 }
 
 async function getOne(req, res) {
-  const { id } = req.params;
   const programme = await prisma.programme.findUnique({
-    where: { id: Number(id) },
+    where: { id: Number(req.params.id) },
     include: { indicateurs: true },
   });
   if (!programme) return res.status(404).json({ error: "Programme introuvable" });
@@ -27,15 +26,19 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-  const { id } = req.params;
   const { nom } = req.body;
-  const programme = await prisma.programme.update({ where: { id: Number(id) }, data: { nom } });
+  const programme = await prisma.programme.update({
+    where: { id: Number(req.params.id) },
+    data: { nom },
+  });
   res.json(programme);
 }
 
 async function remove(req, res) {
-  const { id } = req.params;
-  await prisma.programme.update({ where: { id: Number(id) }, data: { actif: false } });
+  await prisma.programme.update({
+    where: { id: Number(req.params.id) },
+    data: { actif: false },
+  });
   res.status(204).send();
 }
 

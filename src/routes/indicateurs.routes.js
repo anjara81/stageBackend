@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../controllers/indicateurs.controller");
+const c = require("../controllers/indicateurs.controller");
+const { authMiddleware, adminOnly } = require("../middlewares/auth.middleware");
 
-router.get("/", controller.getAll);
-router.get("/:id", controller.getOne);
-router.post("/", controller.create);
-router.put("/:id", controller.update);
-router.delete("/:id", controller.remove);
+router.get("/", c.getAll);
+router.get("/:id", c.getOne);
+router.post("/", authMiddleware, adminOnly, c.create);
+router.put("/:id", authMiddleware, adminOnly, c.update);
+router.delete("/:id", authMiddleware, adminOnly, c.remove);
 
 module.exports = router;
