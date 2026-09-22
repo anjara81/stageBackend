@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/valeurs.controller");
 
+router.get("/stats", controller.getStats);
 router.get("/", controller.getAll);
 router.post("/", controller.upsert);
 
