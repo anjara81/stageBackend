@@ -59,6 +59,7 @@ model Indicateur {
   utiliseCommeDenominateurPar Indicateur[] @relation("FormuleDenominateur")
 
   valeurs ValeurMensuelle[]
+  valeursStructures ValeurStructure[]
 
   @@map("indicateurs")
 }
@@ -125,4 +126,34 @@ model HistoriqueSaisie {
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
 
   @@map("historiques_saisie")
+}
+
+
+model Structure {
+  id        Int      @id @default(autoincrement())
+  nom       String   @unique
+  actif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  valeurs ValeurStructure[]
+
+  @@map("structures")
+}
+
+model ValeurStructure {
+  id        Int      @id @default(autoincrement())
+  annee     Int
+  mois      Int
+  valeur    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  indicateurId Int
+  indicateur   Indicateur @relation(fields: [indicateurId], references: [id])
+
+  structureId Int
+  structure   Structure @relation(fields: [structureId], references: [id])
+
+  @@unique([indicateurId, structureId, annee, mois])
+  @@map("valeurs_structures")
 }

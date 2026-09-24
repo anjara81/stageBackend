@@ -10,6 +10,7 @@ const districtsRoutes = require("./routes/districts.routes");
 const programmesRoutes = require("./routes/programmes.routes");
 const indicateursRoutes = require("./routes/indicateurs.routes");
 const valeursRoutes = require("./routes/valeurs.routes");
+const valeursStructuresRoutes = require("./routes/valeursStructures.routes");
 const servicesRoutes = require("./routes/services.routes");
 const utilisateursRoutes = require("./routes/utilisateurs.routes");
 
@@ -32,6 +33,7 @@ app.use("/api/districts", districtsRoutes);
 app.use("/api/programmes", programmesRoutes);
 app.use("/api/indicateurs", indicateursRoutes);
 app.use("/api/valeurs", valeursRoutes);
+app.use("/api/valeurs-structures", valeursStructuresRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/utilisateurs", utilisateursRoutes);
 
